@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<title></title>
+	<style type="text/css">
+		.body-bg{
+			background-image: linear-gradient(to right bottom, rgb(252, 207, 207),rgb(185, 236, 252));
+		}
+		input{
+			width: 100%;
+			border: 0;
+			border-radius: 4px;
+		}
+	</style>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
+		integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+</head>
+
+<body class="body-bg slideInDown">
+	<div class="mx-auto col-5 mt-5">
+		姓名<input type="text" id="name" />
+		年龄<input type="text" id="age" />
+		性别<input type="text" id="sex" />
+		<button id="add" class="mt-2  btn btn-primary">增加</button>
+		<button id="del" class="mt-2 btn btn-danger">删除选中元素</button>
+		<button id="sort" class="mt-2 btn btn-info">排序(年龄)</button>
+	</div>
+
+	<!--自定义表格样式实现表格数据的增删改查-->
+	<table align="center" border="0" cellspacing="0" cellpadding=""
+		class="table table-bordered table-striped table-dark col-11 mt-5 text-center">
+		<tr class="header">
+			<th>ID</th>
+			<th>选择</th>
+			<th>name</th>
+			<th>age</th>
+			<th>gender</th>
+			<th>操作</th>
+		</tr>
+
+	</table>
+	<script src="js/jq_3.4.1.js" type="text/javascript" charset="utf-8"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"
+		integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous">
+	</script>
+	<script type="text/javascript">
+		// 实现优美的布局， 可以借助UI框架。
+		// 通过input的输入， 实现增加table条目功能。
+		// 通过checkbox实现选中条目， 并实现点击删除按钮达到删除的目的。
+		// 可以通过条目后面的操作一栏实现单独删除。
+		// 同排序按钮实现数据按照年龄排序， 如果年龄相同， 按照女士优先排序。
+		let oInputName = $('#name');
+		let oInputAge = $('#age');
+		let oInputSex = $('#sex');
+		let oBtnAdd = $('#add');
+		let oBtnDel = $("#del");
+		let oBtnSort = $('#sort');
+		let oTable = $("table");
+		let count = 1;
+
+		//新添加
+		oBtnAdd.on('click', () => {
+			if (
+				oInputName.val() != '' &&
+				oInputAge.val() != '' &&
+				oInputSex != '' &&
+				oInputAge.val().match(/^\d+$/) &&
+				oInputSex.val().match(/^男$|^女$/)) {
+				// console.log(oTable.find('.header'));
+				oTable.find('.header').after(`
+					<tr>
+						<td>${count++}</td>
+						<td><input type="checkbox" /></td>
+						<td>${oInputName.val()}</td>
+						<td class='age'>${oInputAge.val()}</td>
+						<td class='sex'>${oInputSex.val()}</td>
+						<td><button class="delete_this">删除</button></td>
+					</tr>
+					`);
+			} else {
+				alert('请补全用户信息 或 检查信息格式');
+			}
+		});
+
+		//删除选中
+		oBtnDel.on('click', () => {
+			oTable.find(':checked').parent().parent().remove();
+		});
+
+		//单独删除
+		oTable.on('click', (ev) => {
+			($(ev.target).is('.delete_this')) && ($(ev.target).parent().parent().remove());
+		});
+
+		//排序
+		oBtnSort.on('click', () => {
+
+
+			$(oTable.children().children(':not(:first-child)').detach().toArray().sort(function (tr1, tr2) {
+				if ($(tr1).find('.age').text() == $(tr2).find('.age').text()) {
+					if ($(tr1).find('.sex').text() == '女') {
+						return -1;
+					} else {
+						return 1;
+					}
+				} else {
+					return Number($(tr1).find('.age').text()) - Number($(tr2).find('.age').text());
+				}
+
+			})).appendTo(oTable.children());
+		});
+	</script>
+</body>
+
+</html>
